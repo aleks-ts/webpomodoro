@@ -3,4 +3,4 @@ webpomodoro
 
 Instructions will be here.
 
-Inspired by pomodoro.me
+Inspired by pomodoro.me.
