@@ -6,6 +6,13 @@ class Model_Task extends ORM
     protected $_primary_key = 'task_id';
     protected $_db_group = 'default';
 
+    protected $_belongs_to = array(
+      'users' => array(
+        'model' => 'User',
+        'foreign_key' => 'user_id',
+      ),
+    );
+
     public static function incPomodoro($task_id)
     {
         $task = ORM::factory('Task')->where('task_id', '=', $task_id)->find();
@@ -20,7 +27,6 @@ class Model_Task extends ORM
 
     public function startTask($task_id)
     {
-
         $task = $this->where('task_id', '=', $task_id)->find();
         if($task->loaded()) {
             if($task->completed == 0) {
@@ -36,7 +42,7 @@ class Model_Task extends ORM
 
     public function getRunningTask()
     {
-        return Session::instance()->get('running_task', 0);
+          return Session::instance()->get('running_task', 0);
     }
 
     public function completeTask($task_id)

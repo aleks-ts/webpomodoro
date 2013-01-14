@@ -1,6 +1,3 @@
-<div id="clock" class="label label-important" style="font-size: 20px" align="right">19:30</div>
-
-
 <?php if(!$valid) {?>
 <div class="alert alert-error">
     <button type="button" class="close" data-dismiss="alert">&times;</button>
@@ -13,14 +10,20 @@
 </div>
 <?php }?>
 
+<div id="clock" class="label label-important" style="font-size: 20px" align="right">00:00</div>
+
 <script type="text/javascript">
     var curTime=0;
     var curTimerId=0;
+    var pomodoroInterval=25*60;
 
     function timerCallback(){
         curTime++;
-        if(curTime>=5){
+        if(curTime>=pomodoroInterval){ // 25*60
             stopTimer();
+
+            // start pause 5 min timer?
+
             $.get('/tasklist/pomodoroComplete',null,function(){
                 window.location.href=window.location.href;
             });
@@ -79,6 +82,7 @@
     <thead>
     <th></th>
     <th>Task</th>
+    <th>User</th>
     <th>Estimated</th>
     <th>Actual</th>
     <th>Start/Stop</th>
@@ -87,18 +91,23 @@
     <tbody>
         <?php foreach ($tasks as $task){ ?>
             <tr <?php if($task->task_id==$running_task) {echo "class='success'"; } ?>>
-                <td><input type="checkbox" onclick="completeTask(<?php echo $task->task_id, ",", $task->completed ?>)"
+                <td><input type="checkbox" onclick="completeTask(<?php echo $task->task_id, ",", $task->completed; ?>)"
                     <?php if($task->completed) {echo "checked='true'";}?>></td>
                 <td <?php if($task->completed) {echo "style='text-decoration: line-through'";}?>><?php echo HtmlHelper::out($task->title) ?></td>
+                <td><?php echo HtmlHelper::out($task->users->nickname) ?></td>
                 <td><?php echo HtmlHelper::out($task->estimated) ?></td>
                 <td><?php echo HtmlHelper::out($task->actual) ?></td>
-                <td><button class="btn"><i class=<?php if($task->task_id==$running_task) {echo "'icon-stop'";} else {echo "'icon-play'";}?>></i></button></td>
+                <td>
+                 <button class="btn" onclick="<?php if($task->task_id==$running_task) {echo 'stopTask(', $task->task_id;} else {echo 'startTask(', $task->task_id;} ?>)">
+                    <i class=<?php if($task->task_id==$running_task) {echo "'icon-stop'";} else {echo "'icon-play'";}?>></i>
+                 </button></td>
+
                 <td><a href="/tasklist/delete/<?php echo HtmlHelper::out($task->task_id) ?>">delete</a></td>
             </tr>
             <?php } ?>
 </table>
 
-<?php echo "running task: ", $running_task; ?>
+<?php echo "Running task: ", $running_task; ?>
 
 <script type="text/javascript">
 
@@ -115,9 +124,40 @@
         }
     }
 
+    function startTask(id){
+        $.get('/tasklist/start/'+id.toString(),null,function(){
+            window.location.href=window.location.href;
+        })
+     }
+
+    function stopTask(id){
+        $.get('/tasklist/stop/'+id.toString(),null,function(){
+            window.location.href=window.location.href;
+        })
+    }
+
 </script>
 
 
+<!--
+<div>
+  <button class="btn" onclick="testJSON()"><i class="icon-play"></i></button>
+</div>
+
+<script type="text/javascript">
+ function testJSON()
+ {
+     $.get("/test",
+         function(data){
+
+             $('body').append( "Name: " + data.name ) // John
+                 .append( " Time: " + data.time ); //  2pm
+
+         }, "json"
+     );
+ }
+</script>
+-->
 
 
 

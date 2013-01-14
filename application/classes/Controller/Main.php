@@ -7,7 +7,7 @@ class Controller_Main extends Controller_Template {
     {
         parent::before();
 
-        $this->template->title = 'Задачи и помидоры';
-        $this->template->content = 'Задачи и помидоры:';
+        $this->template->title = 'Webpomodoro';
+        $this->template->content = '';
     }
 }
